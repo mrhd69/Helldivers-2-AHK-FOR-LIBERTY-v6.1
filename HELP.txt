@@ -1,0 +1,34 @@
+How to Use. (Assuming you set up your Keyboard and Mouse ID useing Monitor provided in the file.)
+
+1. Set all your keybinds. 
+	Note: For StratMenu Key and Weapons key you will have to type in the key you want to use. 
+		for example if you use control you would type control in the box. For the weapons
+		key I recomend useing mouse buttons such as: xbutton1: Side mouse button
+	        					     xbutton2:Side mouse button
+							     mbutton: middle mouse button 
+2. select your profile/Rename profile.
+	Note: (Renaming is complety OPTIONAL, you can just leave them as profile 1-5 if you like) 
+		When Renameing a profile first choose the profile you wish to rename then click the
+		Rename Profile button you will be presented with a promt type what you want to name
+		your profile.
+
+3.Saveing Profiles.
+	Note: When saveing your profile make sure have your profile selected and that you press
+ 		Start before saveing because start updates and set your keys into the script.
+		Don't expect your keys to save if you don't do it!
+		Also make sure ALL keybinds are set as this affects the saving order. 
+		(not reffering to the Stratgem section Only KEYBINDS)
+
+4.Changing Profile settings
+	To change a saved profile setting Select the profile you wish to change, then press load, once
+		loaded change whatever you want, just rember to press Start, Then Save.
+	Note: You can easly switch Between profiles witout having to press start each time,
+		just select a different profile and press load and your good.
+
+Additional Recommendations
+ After setting/saveing your keybinds for your first profile go ahead and select the next profile and save
+	your keybinds there and for the rest of the pofiles to just so you dont have to typing them out 
+	one by one.
+
+
+  	

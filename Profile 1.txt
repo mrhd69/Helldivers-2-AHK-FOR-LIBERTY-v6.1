@@ -1,0 +1,17 @@
+n
+m
+5
+F4
+
+F1
+F2
+.
+,
+`
+control
+   
+Eagle Smoke Strike
+Orbital Lasers
+Orbital Railcannon Strike
+BIG BOOM Bomb
+

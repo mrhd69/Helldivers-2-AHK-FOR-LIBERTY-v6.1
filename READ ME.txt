@@ -1,0 +1,12 @@
+*After interseption is installed*
+
+Open monitor check box your keyboard then press any key you will see a number between 1-20 on the left everytime
+ you click that is your keyboardID.
+ 
+next 
+open up KeyboardID.ini  and infront of KeyboardID= put your keyboardID then you can save and exit.
+
+now just load up For Liberty V6.1 and your done. make sure when you put your keybinds in you press update and 
+save that way you can load them later on.
+
+
