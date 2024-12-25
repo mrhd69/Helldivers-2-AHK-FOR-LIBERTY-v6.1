@@ -4,37 +4,31 @@
 SendMode Input
 SetKeyDelay 30, 30
 
-
 global AHI := new AutoHotInterception()
 
-
- global keyboardId := ""
+global keyboardId := ""
 if FileExist("KeyboardID.ini")
     IniRead, keyboardId, KeyboardID.ini, Settings, KeyboardID
 
-
 if (keyboardId = "")
-    MsgBox, Failed to retrieve the keyboard ID from the configuration file.
-else
-
+    MsgBox, 48, Error, Failed to retrieve the keyboard ID from the configuration file.
 
 
 global mouseId := ""
 if FileExist("MouseID.ini")
     IniRead, mouseId, MouseID.ini, Settings, MouseID
 
-
 if (mouseId = "")
-    MsgBox, Failed to retrieve the mouse ID from the configuration file.
-else
+    MsgBox, 48, Error, Failed to retrieve the mouse ID from the configuration file.
 
 
-
+; -- Global variables used by the GUI and logic --
 global ControlKey
 global Hotkey1 := ""
 global Hotkey2 := ""
 global Hotkey3 := ""
 global Hotkey4 := ""
+global Hotkey5 := ""
 global Resupply := ""
 global Renforce := ""
 global Rearm := ""
@@ -44,138 +38,220 @@ global SelectedAction1 := ""
 global SelectedAction2 := ""
 global SelectedAction3 := ""
 global SelectedAction4 := ""
+global SelectedAction5 := ""
 global SelectedGuns := ""
 global UnsafeRailgun := ""
 
+; -- For the background image you already have --
 backgroundImagePath := "helldiver.jpg"
-Gui, Add, Picture, x420 y240 w80 h90, %backgroundImagePath%
-Gui, Color, 0x151515
-Gui, Font, s10, Georgia
 
-Gui, Add, GroupBox,x0 y0 w178 h237 cRed, STRATAGEMS
-Gui, Add, GroupBox,x320 y0 w100 h110 cRed,
-Gui, Add, GroupBox,x250 y115 w170 h170 cRed, Mission Stratagems
-Gui, Add, GroupBox,x200 y0 w114 h116 cRed, KeyBinds
-Gui, Add, Groupbox,x255 y130 w70 h45 c0x00FFFF, Resupply
-Gui, Add, Groupbox,x345 y130 w70 h45 c0x00FFFF, Rearm
-Gui, Add, GroupBox,x255 y180 w70 h45 c0x00FFFF, Renforce
-Gui, Add, GroupBox,x345 y180 w70 h45 c0x00FFFF, Hellbomb
-Gui, Add, GroupBox,x275 y230 w110 h45 c0x00FFFF, SEAF Artillery
-Gui, Add, Hotkey,x260 y150 w54 h21 vResupply1, %Resupply%
-Gui, Add, Hotkey,x260 y200 w54 h21 vRenforce1, %Renforce%
-Gui, Add, Hotkey,x350 y150 w54 h21 vRearm1, %Rearm%
-Gui, Add, Hotkey,x350 y200 w54 h21 vHellbomb1, %Hellbomb%
-Gui, Add, Hotkey,x295 y250 w70 h21 vSEAF1, %SEAF%
-Gui, Add, Text,x290 y290 cYellow, For Liberty-V6.4
-Gui, Add, Text,x290 y310 cYellow, Developed By HD
-
-Gui, Add, GroupBox,x0 y285 w178 h45 cGreen, Weapons
-Gui, Add, DropDownList,x4 y300 w170 vGuns, ::RAILGUN::|Safe|Unsafe|   |::ArcThrower::|Rapid Arc|Full Arc|
-
-Gui, Add, Edit,x190 y300 w70 h24 vUnsafeRailgun1, %UnsafeRailgun%
-Gui, Add, GroupBox,x180 y285 w90 h45 cGreen, Weapon Key
-
-Gui, Add, Text,x8 y25 cFFB000, Slot 1:
-Gui, Add, DropDownList,x4 y40 w170 vAction1, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
-Gui, Add, Text,x210 y16 w35 h21 +0x200 cFFB000, key1:
-Gui, Add, Hotkey,x250 y16 w56 h21 vHotkey1, %Hotkey1%
-Gui, Add, Text,x8 y75 cFFB000, Slot 2:
-
-Gui, Add, DropDownList,x4 y90 w170 vAction2, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
-
-Gui, Add, Text,x210 y40 w35 h21 +0x200 cFFB000, key2:
-Gui, Add, Hotkey,x250 y40 w56 h21 vHotkey2, %Hotkey2%
-Gui, Add, Text,x8 y125 cFFB000, Slot 3:
-
-Gui, Add, DropDownList,x4 y140 w170 vAction3, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
-Gui, Add, Text,x210 y64 w35 h21 +0x200 cFFB000, key3:
-Gui, Add, Hotkey,x250 y64 w56 h21 vHotkey3, %Hotkey3%
-Gui, Add, Text,x8 y175 cFFB000, Slot 4:
-
-Gui, Add, DropDownList,x4 y190 w170 vAction4,  ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
-
-Gui, Add, Text,x210 y88 w34 h21 +0x200 cFFB000, key4:
-Gui, Add, Hotkey,x250 y88 w56 h21 vHotkey4, %Hotkey4%
-
-Gui, Add, Text,x182 y214 w55 h60 cRed, Additional Key:
-Gui, Add, GroupBox,x0 y240 w178 h45 cRed, Additional Slot:
-Gui, Add, DropDownList,x4 y255 w170 vAction5, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
-
-
+; -- Prepare the profile file list if needed --
 profileFile := "profiles.txt"
-
-
-if FileExist(profileFile)
-{
+if FileExist(profileFile) {
     FileRead, profileList, %profileFile%
-    if (profileList = "")
-    {
-
+    if (profileList = "") {
         profileList := "Profile 1|Profile 2|Profile 3|Profile 4|Profile 5"
     }
-}
-else
-{
-
+} else {
     profileList := "Profile 1|Profile 2|Profile 3|Profile 4|Profile 5"
 }
 
-Gui, Add, DropDownList,x423 y20 w75 vProfile, %profileList%
-Gui, Add, GroupBox,x180 y150 w68 h40 +0x200 cRed,
-Gui, Add, Hotkey,x186 y257 w56 h21 vHotkey5, %Hotkey5%
-Gui, Add, Text, x185 y120 w65 h35 cRed, StratMenu Key:
-Gui, Add, GroupBox,x180 y240 w68 h45 cRed
-Gui, Add, Edit, x186 y164 w56 h21 vControlKeyEdit, %ControlKey%
-Gui, Add, Button,x330 y15 w80 h25 gUpdateButton, Start
-Gui, Add, Button, x330 y45 w80 h25 gSaveButton, Save
-Gui, Add, Button, x330 y75 w80 h25 gLoadButton, Load
-Gui, Add, GroupBox,x421 y0 w79 h110 cRed, Profiles
-Gui, Add, GroupBox,x421 y115 w79 h60 cFF69B4, Help?
-Gui, Add, GroupBox,x421 y175 w79 h60 cFF69B4, Restart
-Gui, Add, Button, x423 y135 w75 gReadMeButton, Read Me
-Gui, Add, Button, x423 y195 w75 gRestartButton, Restart
-Gui, Add, Button, x423 y55 w75 gRenameProfileButton, Rename Profile
-Gui, Show, w500 h330, For LIBERTY!
+; ---------------------------------------------------
+;                  BUILD THE GUI
+; ---------------------------------------------------
+Gui, Color, 0x151515
+Gui, Font, s12, Opensans
+Gui, Margin, 10, 10
+Gui, Add, Button, x430 y10 w90 h25 gUpdateButton, Start
+Gui, Add, Text, x20 y295 cYellow, For Liberty - V6.9 Developed By HD
+
+; -- Add a picture in top-right corner --
+Gui, Add, Picture, x520 y330 w10 h10 vBGPic, %backgroundImagePath%
+
+TabColors_Tab1=FF0000
+TabColors_Tab2=0x00FFFF
+TabColors_Tab3=00FF00
+TabColors_Tab4=0000FF
+TabColors_Tab5=FF69B4
+
+Gui, Add, Tab2, w520 x10 y10 h310 AltSubmit cRed gTab vTab
+	, Keybinds|Stratagems|Weapons|Profiles/Extra|Help
+    Gosub, Tab
+
+
+; ***********************
+;       TAB: Keybinds
+; ***********************
+Gui, Tab, Keybinds
+
+; Group: Keybinds
+Gui, Add, GroupBox, x10 y35 w280 h255 cRed, KeyBinds
+    ; Slot 1
+    Gui, Add, Text, x20 y55 cFFB000, Stratagem 1:
+    Gui, Add, DropDownList, x20 y75 w215 vAction1, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
+    Gui, Add, Text, x325 y105 w130 h21 +0x200 cFFB000,Stratagemkey1:
+    Gui, Add, Hotkey, x440 y102 w50 h25 vHotkey1, %Hotkey1%
+
+    ; Slot 2
+    Gui, Add, Text, x20 y105 cFFB000, Stratagem 2:
+    Gui, Add, DropDownList, x20 y125 w215 vAction2, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
+    Gui, Add, Text, x325 y130 w130 h21 +0x200 cFFB000, Stratagemkey2:
+    Gui, Add, Hotkey, x440 y128 w50 h25 vHotkey2, %Hotkey2%
+
+
+    ; Slot 3
+    Gui, Add, Text, x20 y155 cFFB000, Stratagem 3:
+    Gui, Add, DropDownList, x20 y175 w215 vAction3, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
+    Gui, Add, Text, x325 y155 w130 h21 +0x200 cFFB000, Stratagemkey3:
+    Gui, Add, Hotkey, x440 y154 w50 h25 vHotkey3, %Hotkey3%
+
+    ; Slot 4
+    Gui, Add, Text, x20 y205 cFFB000, Stratagem 4:
+    Gui, Add, DropDownList, x20 y225 w215 vAction4, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
+    Gui, Add, Text, x325 y180 w130 h21 +0x200 cFFB000, Stratagemkey4:
+    Gui, Add, Hotkey, x440 y180 w50 h25 vHotkey4, %Hotkey4%
+
+Gui, Add, GroupBox, x317 y89 w185 h120 cRed
+; Additional Key
+Gui, Add, GroupBox, x317 y40 w185 h60 cred, StratMenu Key
+    Gui, Add, Edit, x373 y62 w80 h30 vControlKeyEdit, %ControlKey%
+
+; Additional Slot
+Gui, Add, GroupBox, x295 y230 w225 h60 cff00ff, Additional Stratagem
+    Gui, Add, DropDownList, x300 y253 w215 vAction5, ::EAGLES::| |---Airstrikes---|Eagle Airstrike|Eagle Napalm Airstrike| |---Bombs---|Eagle 500kg Bomb|Eagle Cluster Bomb| |---Tactical---|Eagle 110MM Rocket Pods|Eagle Air-to-Air Missiles|Eagle Smoke Strike|Eagle Strafing Run|   |::ORBITALS::| |---Team Hazards---|Orbital 120MM HE Barrage|Orbital 380MM HE Barrage|Orbital Gatling Barrage|Orbital Napalm Barrage|Orbital Walking Barrage| |---Orbital Strikes---|Orbital Airburst Strike|Orbital EMS Strike|Orbital Gas Strike|Orbital Smoke Strike|Orbital Precision Strike|Orbital Lasers|Orbital Railcannon Strike|   |::SENTRYS::| |---Mines---|Anti-Personnel Minefield|Gas Mines|Anti Tank Mines|Incendiary Mines| |---Turrets---|Autocannon Sentry|Gatling Sentry|Flame Sentry|Machine Gun Sentry|EMS Mortar Sentry|Mortar Sentry|Rocket Sentry|Missile Silo|Tesla Tower| |---Emplacements---|Anti Tank Emplacement|HMG Emplacement|  |::SUPPORT::| |---Backpacks---|Ballistic Shield Backpack|Displacer Pack|Shield Generator Pack|Supply Pack|Jump Pack| |---Dogos---|Guard Dog|Guard Dog Rover|Guard Dog Dog Breath| |---Tactical Cover---|Defense Wall|Grenadier Battlement|Directional Shield|Shield Generation Relay| |---Meds---|Medical Supplies|   |::VEHICLES::| |---TitanFall---|Emancipator Exosuit|Patriot Exosuit| |---Transport---|Light Armmored Vehicle|Fast Recon Vehicle|   |::WEAPONS::| |---Cannons---|Laser Cannon|Autocannon|Quasar Cannon| |---Launchers---|StA-X3 W.A.S.P. Launcher|AirBurst Rocket Launcher|Grenade Launcher| |---Anti Tank---|Expendable Anti-Tank|Railgun|Spear|Stinger| |---Machine Guns---|Machine Gun|Heavy Machine Gun|Stalwart| |---Rifles---|Anti-Material Rifle|Recoiled Rifle| |---Throwers---|Arc Thrower|Flamethrower|Sterilizer
+    Gui, Add, Text, x325 y210 w120 cff00ff, AddStrat Key:
+    Gui, Add, Hotkey, x440 y209 w50 h25 vHotkey5, %Hotkey5%
+
+; ***********************
+;      TAB: Stratagems
+; ***********************
+Gui, Tab, Stratagems
+
+; Group: Stratagems
+Gui, Add, GroupBox, x12 y40 w290 h100 cb3d7ff, Support Stratagems
+Gui, Add, GroupBox, x12 y160 w290 h100 cb3d7ff, Mission Stratagems
+    Gui, Add, GroupBox, x20 y60 w85 h60 c0x00FFFF, Resupply
+    Gui, Add, Hotkey, x37 y82 w50 h30 vResupply1, %Resupply%
+
+    Gui, Add, GroupBox, x200 y60 w65 h60 c0x00FFFF, Rearm
+    Gui, Add, Hotkey, x207 y82 w50 h30 vRearm1, %Rearm%
+
+    Gui, Add, GroupBox, x110 y60 w85 h60 c0x00FFFF, Renforce
+    Gui, Add, Hotkey, x127 y82 w50 h30 vRenforce1, %Renforce%
+
+    Gui, Add, GroupBox, x30 y185 w85 h60 c0x00FFFF, Hellbomb
+    Gui, Add, Hotkey, x47  y207 w50 h30 vHellbomb1, %Hellbomb%
+
+    Gui, Add, GroupBox, x130 y185 w115 h60 c0x00FFFF, SEAF Artillery
+    Gui, Add, Hotkey, x160 y207 w50 h30 vSEAF1, %SEAF%
+
+
+; ***********************
+;      TAB: Weapons
+; ***********************
+Gui, Tab, Weapons
+
+Gui, Add, GroupBox, x10 y45 w180 h60 cGreen, Weapon Modes
+    Gui, Add, DropDownList, x20 y67 w160 vGuns, ::RAILGUN::|Safe|Unsafe|   |::ArcThrower::|Rapid Arc|Full Arc|
+
+Gui, Add, GroupBox, x200 y45 w115 h60 cGreen, Weapons Key
+    Gui, Add, Edit, x210 y67 w95 h30 vUnsafeRailgun1, %UnsafeRailgun%
+
+; ***********************
+;   TAB: Profiles/Extra
+; ***********************
+Gui, Tab, Profiles/Extra
+
+; Profiles box
+Gui, Add, GroupBox, x11 y45 w160 h80 cRed, Profiles
+    Gui, Add, DropDownList, x20 y65 w140 vProfile, %profileList%
+    Gui, Add, Button, x20 y95 w140 h25 gRenameProfileButton, Rename
+
+Gui, Add, GroupBox, x180 y45 w145 h80 cRed, Save/Load
+    Gui, Add, Button, x190 y65 w125 h25 gSaveButton, Save
+    Gui, Add, Button, x190 y93 w125 h25 gLoadButton, Load
+
+; Restart Box
+Gui, Add, GroupBox, x350 y45 w130 h80 cFF69B4, Restart
+    Gui, Add, Button, x360 y65 w110 h25 gRestartButton, Restart Script
+
+; ***********************
+;        TAB: Help
+; ***********************
+Gui, Tab, Help
+
+Gui, Add, GroupBox, x10 y45 w120 h80 cFF69B4, Read Me
+    Gui, Add, Button, x20 y65 w100 h25 gReadMeButton, Help?
+
+
+; End the tab control
+Gui, Tab
+Gui, Show, w540 h330, For LIBERTY!
+
+Tab:
+GuiControlGet, Tab
+GuiControl, % "+c" TabColors_Tab%Tab%, Tab
 return
 
+; ---------------------------------------------------
+;   CHANGE TAB COLORS (BACKGROUND & TEXT)
+; ---------------------------------------------------
+; These messages work on standard SysTabControl32 controls.
+
+; Retrieve the HWND of the tab control.
+; The ClassNN "SysTabControl321" is the default for the first tab control in the GUI.
+Gui +LastFound
+ControlGet, hTab, Hwnd,, SysTabControl321, For LIBERTY!
+
+; Set the tab background color to a dark gray (0x222222). Must be in BGR format.
+; 0x00222222 in hex = 2236962 decimal.
+SendMessage, %TCM_SETBKCOLOR%, 0, 0x00222222,, ahk_id %hTab%
+
+; Set the tab text color to white (0xFFFFFF). (In BGR or standard is the same for white.)
+SendMessage, %TCM_SETTEXTCOLOR%, 0, 0x00FFFFFF,, ahk_id %hTab%
+
+return
+
+; ---------------------------------------------------
+;            BUTTON / HOTKEY HANDLERS
+; ---------------------------------------------------
 ReadMeButton:
     Run, notepad.exe HELP.txt
 return
 
 UpdateButton:
-    GuiControlGet, NewResupplyHotkey, , Resupply1
+{
+    GuiControlGet, NewResupplyHotkey,, Resupply1
     if (NewResupplyHotkey = "") {
-        MsgBox, Please specify a hotkey for Resupply.
+        MsgBox, 48, Missing Field, Please specify a hotkey for Resupply.
         return
     }
 
-    GuiControlGet, NewRenforceHotkey, , Renforce1
+    GuiControlGet, NewRenforceHotkey,, Renforce1
     if (NewRenforceHotkey = "") {
-        MsgBox, Please specify a hotkey for Renforce.
+        MsgBox, 48, Missing Field, Please specify a hotkey for Renforce.
         return
     }
 
-    GuiControlGet, NewRearmHotkey, , Rearm1
+    GuiControlGet, NewRearmHotkey,, Rearm1
     if (NewRearmHotkey = "") {
-        MsgBox, Please specify a hotkey for Rearm.
+        MsgBox, 48, Missing Field, Please specify a hotkey for Rearm.
         return
     }
 
-    GuiControlGet, NewHellbombHotkey, , Hellbomb1
+    GuiControlGet, NewHellbombHotkey,, Hellbomb1
     if (NewHellbombHotkey = "") {
-        MsgBox, Please specify a hotkey for Hellbomb.
+        MsgBox, 48, Missing Field, Please specify a hotkey for Hellbomb.
         return
     }
 
-    GuiControlGet, NewSEAFHotkey, , SEAF1
+    GuiControlGet, NewSEAFHotkey,, SEAF1
     if (NewSEAFHotkey = "") {
-        MsgBox, Please specify a hotkey for SEAF.
+        MsgBox, 48, Missing Field, Please specify a hotkey for SEAF.
         return
     }
 
-
- GuiControlGet, ControlKey, , ControlKeyEdit
-
+    GuiControlGet, ControlKey,, ControlKeyEdit
     ControlKey := (InStr(ControlKey, "Control") || InStr(ControlKey, "Ctrl")) ? "Ctrl" : ControlKey
 
     if (OldResupplyHotkey != "")
@@ -202,13 +278,12 @@ UpdateButton:
     OldSEAFHotkey := NewSEAFHotkey
     OldUnsafeRailgunHotkey := NewUnsafeRailgunHotkey
 
-    GuiControlGet, NewHotkey1, , Hotkey1
-    GuiControlGet, NewHotkey2, , Hotkey2
-    GuiControlGet, NewHotkey3, , Hotkey3
-    GuiControlGet, NewHotkey4, , Hotkey4
-    GuiControlGet, NewHotkey5, , Hotkey5
-    GuiControlGet, ControlKey, , ControlKeyEdit
-    GuiControlGet, NewUnsafeRailgunHotkey, , UnsafeRailgun1
+    GuiControlGet, NewHotkey1,, Hotkey1
+    GuiControlGet, NewHotkey2,, Hotkey2
+    GuiControlGet, NewHotkey3,, Hotkey3
+    GuiControlGet, NewHotkey4,, Hotkey4
+    GuiControlGet, NewHotkey5,, Hotkey5
+    GuiControlGet, NewUnsafeRailgunHotkey,, UnsafeRailgun1
 
     ToggleHotkey(OldHotkey1, NewHotkey1, "ActionHandler1")
     ToggleHotkey(OldHotkey2, NewHotkey2, "ActionHandler2")
@@ -224,36 +299,26 @@ UpdateButton:
     OldHotkey5 := NewHotkey5
     OldUnsafeRailgunHotkey := NewUnsafeRailgunHotkey
 
-    GuiControlGet, Guns, , Guns
-    GuiControlGet, Action1, , Action1
-    GuiControlGet, Action2, , Action2
-    GuiControlGet, Action3, , Action3
-    GuiControlGet, Action4, , Action4
-    GuiControlGet, Action5, , Action5
-
+    GuiControlGet, Guns,, Guns
+    GuiControlGet, Action1,, Action1
+    GuiControlGet, Action2,, Action2
+    GuiControlGet, Action3,, Action3
+    GuiControlGet, Action4,, Action4
+    GuiControlGet, Action5,, Action5
+}
 return
 
 SaveButton:
+{
     Gui, Submit, NoHide
     profile := Profile
-
     fileName := profile ".txt"
-
     FileDelete, %fileName%
     File := FileOpen(fileName, "w")
     if !File
-    {
-
         return
-    }
 
-    GuiControlGet, SelectedGuns,, Guns
-    GuiControlGet, SelectedAction1,, Action1
-    GuiControlGet, SelectedAction2,, Action2
-    GuiControlGet, SelectedAction3,, Action3
-    GuiControlGet, SelectedAction4,, Action4
-    GuiControlGet, SelectedAction5,, Action5
-
+    ; Write each line in the same order as loaded
     File.WriteLine(NewHotkey1)
     File.WriteLine(NewHotkey2)
     File.WriteLine(NewHotkey3)
@@ -268,64 +333,51 @@ SaveButton:
     if (NewUnsafeRailgunHotkey != "")
         File.WriteLine(NewUnsafeRailgunHotkey)
 
-
     File.WriteLine(SelectedGuns)
     File.WriteLine(SelectedAction1)
     File.WriteLine(SelectedAction2)
     File.WriteLine(SelectedAction3)
     File.WriteLine(SelectedAction4)
     File.WriteLine(SelectedAction5)
-
-
     File.Close()
 
-    MsgBox, Keybinds saved successfully.
+    MsgBox, 64, Saved, Keybinds saved successfully.
+}
 return
 
-
 LoadButton:
+{
     Gui, Submit, NoHide
     profile := Profile
-
-
     fileName := profile ".txt"
-
-
     FileRead, Keybinds, %fileName%
-    if ErrorLevel
-    {
-        MsgBox, Could not load keybinds from file.
+    if ErrorLevel {
+        MsgBox, 48, Error, Could not load keybinds from file.
         return
     }
 
-
     StringSplit, KeybindArray, Keybinds, `n
-
-
-    Hotkey1 := KeybindArray1
-    Hotkey2 := KeybindArray2
-    Hotkey3 := KeybindArray3
-    Hotkey4 := KeybindArray4
-    Hotkey5 := KeybindArray5
-    Resupply := KeybindArray6
-    Renforce := KeybindArray7
-    Rearm := KeybindArray8
-    Hellbomb := KeybindArray9
-    SEAF := KeybindArray10
-    ControlKey := KeybindArray11
+    Hotkey1       := KeybindArray1
+    Hotkey2       := KeybindArray2
+    Hotkey3       := KeybindArray3
+    Hotkey4       := KeybindArray4
+    Hotkey5       := KeybindArray5
+    Resupply      := KeybindArray6
+    Renforce      := KeybindArray7
+    Rearm         := KeybindArray8
+    Hellbomb      := KeybindArray9
+    SEAF          := KeybindArray10
+    ControlKey    := KeybindArray11
     UnsafeRailgun := KeybindArray12
 
+    Guns          := KeybindArray13
+    Action1       := KeybindArray14
+    Action2       := KeybindArray15
+    Action3       := KeybindArray16
+    Action4       := KeybindArray17
+    Action5       := KeybindArray18
 
-    Guns := KeybindArray13
-    Action1 := KeybindArray14
-    Action2 := KeybindArray15
-    Action3 := KeybindArray16
-    Action4 := KeybindArray17
-    Action5 := KeybindArray18
-
-
-    MsgBox, Loaded Profile
-
+    MsgBox, 64, Loaded, Loaded Profile
 
     GuiControl,, Hotkey1, %Hotkey1%
     GuiControl,, Hotkey2, %Hotkey2%
@@ -340,14 +392,12 @@ LoadButton:
     GuiControl,, ControlKeyEdit, %ControlKey%
     GuiControl,, UnsafeRailgun1, %UnsafeRailgun%
 
-
     GuiControl,, Guns,
     GuiControl,, Action1,
     GuiControl,, Action2,
     GuiControl,, Action3,
     GuiControl,, Action4,
     GuiControl,, Action5,
-
 
     GuiControl,, Guns, %Guns%
     GuiControl,, Action1, %Action1%
@@ -356,7 +406,6 @@ LoadButton:
     GuiControl,, Action4, %Action4%
     GuiControl,, Action5, %Action5%
 
-
     GuiControl, ChooseString, Guns, %Guns%
     GuiControl, ChooseString, Action1, %Action1%
     GuiControl, ChooseString, Action2, %Action2%
@@ -364,63 +413,54 @@ LoadButton:
     GuiControl, ChooseString, Action4, %Action4%
     GuiControl, ChooseString, Action5, %Action5%
 
-
     Gui, Show
-
+}
 return
 
-
 RestartButton:
-
     Run, %A_ScriptFullPath%
-
-
     ExitApp
 return
 
 RenameProfileButton:
+{
     Gui, Submit, NoHide
     GuiControlGet, selectedProfile, , Profile
 
-
     InputBox, newProfile, Rename Profile, Enter the new profile name:
-    if ErrorLevel
-    {
-        MsgBox, Rename cancelled.
+    if ErrorLevel {
+        MsgBox, 48, Cancelled, Rename cancelled.
         return
     }
 
     profilesArray := StrSplit(profileList, "|")
-
-    for index, value in profilesArray
-    {
-        if (value = selectedProfile)
-        {
+    for index, value in profilesArray {
+        if (value = selectedProfile) {
             profilesArray[index] := newProfile
             break
         }
     }
 
     newProfileList := ""
-    for index, value in profilesArray
-    {
+    for index, value in profilesArray {
         newProfileList .= value "|"
     }
     StringTrimRight, newProfileList, newProfileList, 1
 
     FileDelete, %profileFile%
-
     FileAppend, %newProfileList%, %profileFile%
 
     GuiControl,, Profile, |%newProfileList%
-
     GuiControl, ChooseString, Profile, %newProfile%
 
     profileList := newProfileList
-
-    MsgBox, Profile renamed successfully.
+    MsgBox, 64, Success, Profile renamed successfully.
+}
 return
 
+; ---------------------------------------------------
+;                 HOTKEY HANDLERS
+; ---------------------------------------------------
 Send1(key) {
     AHI.SendKeyEvent(keyboardId, GetKeySC(key), 1)
 }
